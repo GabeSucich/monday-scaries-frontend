@@ -1,20 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
 
-export default function App() {
+import React from 'react';
+import {
+  SafeAreaView,
+} from 'react-native';
+
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { ApiProvider } from './src/state/apiState';
+import AuthProvider from './src/state/authState';
+import Entry from './src/pages/Entry';
+import BettorGroupsProvider from './src/state/bettorGroupsState';
+import { NavigationContainer } from '@react-navigation/native';
+
+function App(): React.JSX.Element {
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+        <SafeAreaProvider>
+          <AuthProvider>
+            <ApiProvider>
+              <BettorGroupsProvider>
+                <SafeAreaView>
+                  <Entry />
+                </SafeAreaView>
+              </BettorGroupsProvider>
+            </ApiProvider>
+          </AuthProvider>
+        </SafeAreaProvider>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;

@@ -1,0 +1,28 @@
+{
+  "cli": {
+    "version": ">= 7.1.1",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_SERVER_ENDPOINT": "https://monday-scaries-backend-9a72042a3950.herokuapp.com"
+      }
+    },
+    "test": {
+      "env": {
+        "EXPO_PUBLIC_SERVER_ENDPOINT": "https://monday-scaries-backend-dev-5798995da4d5.herokuapp.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
