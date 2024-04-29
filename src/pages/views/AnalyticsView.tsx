@@ -34,7 +34,7 @@ const AnalyticsView: FunctionComponent<Props> = (props) => {
     return (
         <View style={{paddingTop: 10, alignItems: "center"}}>
             <Text>Analytics!</Text>
-            {
+            {/* {
                 wagerChartData(bettorState.bettor._id) ?
                 <LineChart 
                     data={{
@@ -51,7 +51,7 @@ const AnalyticsView: FunctionComponent<Props> = (props) => {
                 />
                 : <Text>Loading...</Text>
 
-            }
+            } */}
             
         </View>
     )

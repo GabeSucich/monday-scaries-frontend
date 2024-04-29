@@ -1,15 +1,17 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Pressable, RefreshControl, SafeAreaView, ScrollView, View  } from "react-native";
 import { useBettorStateUtilities } from "../../state/bettorState";
-import { Text } from "@rneui/themed";
+import { Button, ButtonGroup, Divider, Header, Text } from "@rneui/themed";
 import { Bettor, User, Wager } from "../../types";
 import LoadingComponent from "../../components/LoadingMessage";
 import ErrorMessage from "../../components/ErrorMessage";
-import { bettorProfit, sortWagers } from "../../../utilities/bettorUtilities";
+import { bettorIsQuarterDQed, bettorProfit, sortWagers, wagersProfit } from "../../../utilities/bettorUtilities";
 import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 import WagerList from "../../components/WagerList";
+import { ContestDate, QuarterNum, monthToQuarter, parseQuarterDateString } from "../../../utilities/dateUtilities";
+import ButtonSelectionGroup from "../../components/ButtonSelectionGroup";
 
 export type StandingStackParamsList = {
     StandingsList: undefined,
@@ -39,6 +41,7 @@ type StandingsListProps = NativeStackScreenProps<StandingStackParamsList, "Stand
 const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
 
     const {
+        bettorState,
         bettorGroupBettorsServerData,
         bettorWagerErrors,
         allBettorWagersLoaded,
@@ -49,6 +52,26 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
 
     const [bettorGroupBettors, _, loadingBettors, serverError] = bettorGroupBettorsServerData
 
+    function nowQuarter() {
+        return monthToQuarter(new Date().getMonth() + 1)
+    }
+
+    const [selectedYear, setSelectedYear] = useState<number>(2024)
+    const [selectedQuarter, setSelectedQuarter] = useState<QuarterNum | undefined>(nowQuarter())
+
+    function qualifiedBettorWagerData() {
+        return sortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+            if (!selectedQuarter) return true
+            return !bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
+        })
+    }
+
+    function disqualifiedBettorWagerData() {
+        return sortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+            if (!selectedQuarter) return false
+            return bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
+        })
+    }
 
     if (loadingBettors) {
         return (
@@ -83,23 +106,65 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
     } else if (bettorGroupBettors) {
         return (
             <SafeAreaView>
+                <View style={{display: "flex", flexDirection: "row"}}>
+                <ButtonSelectionGroup 
+                    options={[2024]}
+                    selected={selectedYear}
+                    setter={setSelectedYear}
+                    allowUnselect={false}
+                    allowOverflow={true}
+                    containerStyle={{alignSelf: "flex-start", flex: 1}}
+                    colorMap={() => "primary"}
+                />
+                <ButtonSelectionGroup 
+                    options={[1, 2, 3, 4] as QuarterNum[]}
+                    selected={selectedQuarter}
+                    setter={setSelectedQuarter}
+                    allowUnselect={true}
+                    allowOverflow={true}
+                    makeTitle={q => `Q${q}`}
+                    containerStyle={{flex: 1, justifyContent: "flex-end"}}
+                    colorMap={() => "primary"}
+                />
+                </View>
                 <ScrollView
                     style={{alignSelf: "center", minHeight: "100%"}}
                     refreshControl={
                         <RefreshControl refreshing={refreshingState[0]} onRefresh={refreshBettorWagerData}/>
                     }
                 >
-                    {sortedBettorWagerData().map((b, index) => {
+                    {qualifiedBettorWagerData().map((b, index) => {
                         return (
                             <BettorStanding 
                                 bettor={b.bettor}
                                 user={b.user as User}
                                 placement={index + 1}
                                 wagers={b.wagers}
-                                key={index}
+                                key={`qualified-${index}`}
                             />
                         )
                     })}
+                    {
+                        disqualifiedBettorWagerData().length > 0 ?
+                            <View style={{marginTop: 15}}>
+                                <Divider width={5} style={{marginTop: 5}}/>
+                                {
+                                    disqualifiedBettorWagerData().map((b, index) => {
+                                    return (
+                                        <BettorStanding 
+                                            bettor={b.bettor}
+                                            user={b.user as User}
+                                            wagers={b.wagers}
+                                            key={`disqualified-${index}`}
+                                            disqualified={true}
+                                        />
+                                    )
+                                })
+                                }
+
+                            </View> : null
+                    }
+                    
                 </ScrollView>
                  
             </SafeAreaView>  
@@ -114,10 +179,11 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
 }
 
 type BettorStandingProps = {
-    placement: number,
+    placement?: number,
     bettor: Bettor,
     user: User,
-    wagers: Wager[]
+    wagers: Wager[],
+    disqualified?: boolean
 }
 
 const BettorStanding: FunctionComponent<BettorStandingProps> = (props) => {
@@ -129,10 +195,9 @@ const BettorStanding: FunctionComponent<BettorStandingProps> = (props) => {
         if (!wagers) {
             return undefined
         } else {
-            return bettorProfit(bettor, wagers)
+            return wagersProfit(wagers)
         }
     }
-
 
     return (
         <Pressable
@@ -141,12 +206,13 @@ const BettorStanding: FunctionComponent<BettorStandingProps> = (props) => {
             <View style={[
                 GlobalStylesheet.box, 
                 { 
-                    backgroundColor: GlobalStyleAttrs.backgroundColors.neutral, 
+                    backgroundColor: props.disqualified ? "#c7c7c7" : GlobalStyleAttrs.backgroundColors.neutral, 
                     // justifyContent: "center",
                     alignItems: "center", 
                     // minWidth: "70%",
                     marginTop: 20,
-                    padding: 10
+                    padding: 10,
+                    opacity: props.disqualified ? 0.5 : 1
                 }
             ]}
             >
@@ -156,7 +222,7 @@ const BettorStanding: FunctionComponent<BettorStandingProps> = (props) => {
                         style={{
                             fontWeight: "bold",
                         }}
-                    >{props.placement}. {user.firstName} {user.lastName}  ({profit() >= 0 ? '+' : '-'}${Math.abs(profit())})</Text>
+                    >{props.placement ? `${props.placement}.` : '' } {user.firstName} {user.lastName}  ({profit() >= 0 ? '+' : '-'}${Math.abs(profit())})</Text>
                 </View>
             </View>
         </Pressable>

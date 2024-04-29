@@ -1,4 +1,5 @@
 import { Bettor, BettorDeposit, Wager } from "../src/types"
+import { QuarterNum, monthToQuarter } from "./dateUtilities"
 
 export function bettorProfit(bettor: Bettor, activeWagers: Wager[]) {
     const initialDeposit = bettor.deposits.find(d => !d.isReBuy)
@@ -14,6 +15,29 @@ export function bettorProfit(bettor: Bettor, activeWagers: Wager[]) {
     effectiveBalance += pendingBetAmount
 
     return parseFloat((effectiveBalance - (initialDeposit?.amount ?? 0)).toFixed(2))
+}
+
+export function wagerProfit(wager: Wager) {
+    if (!wager.result) {
+        return 0
+    } else if (wager.result === "Win" || wager.result === "Cash Out") {
+        return wager.payout - wager.amount
+    } else if (wager.result === "Loss") {
+        return -1 * wager.amount
+    } else if (wager.result === "Push") {
+        return 0
+    }
+    return 0
+}
+
+export function wagersProfit(wagers: Wager[]) {
+    let profit = 0
+    wagers.forEach(w => {
+        if (w.result) {
+            profit += wagerProfit(w)
+        }
+    })
+    return parseFloat(profit.toFixed(2))
 }
 
 
@@ -74,4 +98,17 @@ export function wagersToLineChartData(wagers: Wager[], deposits: BettorDeposit[]
         chartVals.push(currentVal)
     })
     return chartVals
+}
+
+export function bettorIsQuarterDQed(bettor: Bettor, year: number, quarterNum: QuarterNum) {
+    return bettor.deposits.find(d => {
+        const date = new Date(d.createdAt)
+        const nowYear = date.getFullYear()
+        const nowMonth = date.getMonth() + 1
+        const nowQuarter = monthToQuarter(nowMonth)
+        if (!d.isReBuy) {
+            return false
+        }
+        return year === nowYear && quarterNum === nowQuarter
+    }) ? true : false
 }

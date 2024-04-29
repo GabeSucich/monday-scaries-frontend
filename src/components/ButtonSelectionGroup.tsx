@@ -46,7 +46,7 @@ function ButtonSelectionGroup<T>(props: Props<T>) {
     }
 
     return (
-        <View style={[props.containerStyle ?? {}, {flexWrap: props.allowOverflow ? "nowrap" : "wrap"}, styles.container]}> 
+        <View style={[styles.container, props.containerStyle ?? {}, {flexWrap: props.allowOverflow ? "nowrap" : "wrap"}]}> 
             {
                 props.allowOverflow ?  
                 <ScrollView 
