@@ -1,17 +1,17 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Wager, WagerResult } from "../types";
-import { useBettorDispatch, useBettorState } from "../state/bettorState";
+import { Wager, WagerResult } from "../../types";
+import { useBettorDispatch, useBettorState } from "../../state/bettorState";
 import { KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
-import { useApiState } from "../state/apiState";
-import { useServerDataState } from "../stateUtilities.ts/serverDataState";
+import { useApiState } from "../../state/apiState";
+import { useServerDataState } from "../../stateUtilities.ts/serverDataState";
 import { Button, CheckBox, Icon, Overlay, Switch, Text } from "@rneui/themed";
-import { GlobalStyleAttrs, GlobalStylesheet } from "../../styles";
-import ErrorMessage from "./ErrorMessage";
-import SuccessMessage from "./SuccessMessage";
-import ButtonSelectionGroup from "./ButtonSelectionGroup";
+import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
+import ErrorMessage from "../alerts/ErrorMessage";
+import SuccessMessage from "../alerts/SuccessMessage";
+import ButtonSelectionGroup from "../utilities/ButtonSelectionGroup";
 import { Divider } from "@rneui/base";
-import { amountToString, dateFormatter, oddsToString } from "../../utilities/stringUtilities";
-import { useFormattedState, usePrefixState } from "../stateUtilities.ts/prefixState";
+import { amountToString, dateFormatter, oddsToString } from "../../../utilities/stringUtilities";
+import { useFormattedState, usePrefixState } from "../../stateUtilities.ts/prefixState";
 import {Calendar} from "react-native-calendars"
 import { SafeAreaView } from "react-native-safe-area-context";
 

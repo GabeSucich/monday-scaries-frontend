@@ -5,10 +5,10 @@ import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View, StyleShee
 import { Button, Text } from "@rneui/base";
 import { useServerDataState } from "../../stateUtilities.ts/serverDataState";
 import { useBettorGroupsDispatch, useBettorGroupsState } from "../../state/bettorGroupsState";
-import LoadingComponent from "../../components/LoadingMessage";
+import LoadingComponent from "../../components/alerts/LoadingMessage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackParamsList } from "../Home";
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/alerts/ErrorMessage";
 import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 
 

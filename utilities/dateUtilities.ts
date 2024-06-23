@@ -1,3 +1,4 @@
+import React, { useState } from "react"
 import { Wager } from "../src/types"
 
 export type QuarterNum = 1 | 2 | 3 | 4
@@ -76,6 +77,14 @@ function dateStringToContestDate(dateString: string, defaultContestDate: DateDes
         day,
         month,
         year
+    }
+}
+
+export function nowDate() {
+    const now = new Date()
+    return {
+        year: now.getFullYear(),
+        quarter: monthToQuarter(now.getMonth() + 1)
     }
 }
 
@@ -162,4 +171,26 @@ export function organizeWagersByYear(wagers: Wager[], _defaultContestDate: Parti
             wagers
         }
     }).sort((a, b) => a.year - b.year)
+}
+
+export function useTimeFrameSelection(setInitialQuarter?: boolean): {
+    selectedYear: number | undefined,
+    setSelectedYear: React.Dispatch<React.SetStateAction<number | undefined>>
+    selectedQuarter: QuarterNum | undefined,
+    setSelectedQuarter: React.Dispatch<React.SetStateAction<QuarterNum | undefined>>
+} {
+    const {
+        year: nowYear,
+        quarter: nowQuarter
+    } = nowDate()
+
+    const [selectedYear, setSelectedYear] = useState<number | undefined>(nowYear)
+    const [selectedQuarter, setSelectedQuarter] = useState<QuarterNum | undefined>(setInitialQuarter ? nowQuarter : undefined)
+
+    return {
+        selectedYear,
+        setSelectedYear,
+        selectedQuarter,
+        setSelectedQuarter
+    }
 }

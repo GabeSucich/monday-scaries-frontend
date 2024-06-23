@@ -1,10 +1,10 @@
 import React, { FunctionComponent, useState } from "react";
-import { Wager } from "../types";
+import { Wager } from "../../types";
 import { KeyboardAvoidingView, Modal, Pressable, View } from "react-native";
 import { Button, Chip, Divider, Icon, Text } from "@rneui/themed";
-import { GlobalStyleAttrs, GlobalStylesheet } from "../../styles";
+import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 import EditWagerModal from "./EditWagerModal";
-import { oddsToString } from "../../utilities/stringUtilities";
+import { oddsToString } from "../../../utilities/stringUtilities";
 
 interface Props {
     wager: Wager,

@@ -3,15 +3,15 @@ import { Pressable, RefreshControl, SafeAreaView, ScrollView, View  } from "reac
 import { useBettorStateUtilities } from "../../state/bettorState";
 import { Button, ButtonGroup, Divider, Header, Text } from "@rneui/themed";
 import { Bettor, User, Wager } from "../../types";
-import LoadingComponent from "../../components/LoadingMessage";
-import ErrorMessage from "../../components/ErrorMessage";
+import LoadingComponent from "../../components/alerts/LoadingMessage";
+import ErrorMessage from "../../components/alerts/ErrorMessage";
 import { bettorIsQuarterDQed, bettorProfit, sortWagers, wagersProfit } from "../../../utilities/bettorUtilities";
 import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
-import WagerList from "../../components/WagerList";
-import { ContestDate, QuarterNum, monthToQuarter, parseQuarterDateString } from "../../../utilities/dateUtilities";
-import ButtonSelectionGroup from "../../components/ButtonSelectionGroup";
+import WagerList from "../../components/wagers/WagerList";
+import { ContestDate, QuarterNum, monthToQuarter, parseQuarterDateString, useTimeFrameSelection } from "../../../utilities/dateUtilities";
+import TimeFrameSelection from "../../components/timeFrames/TimeFrameSelection";
 
 export type StandingStackParamsList = {
     StandingsList: undefined,
@@ -45,29 +45,29 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
         bettorGroupBettorsServerData,
         bettorWagerErrors,
         allBettorWagersLoaded,
-        sortedBettorWagerData,
+        allSortedBettorWagerData,
         refreshingState,
         refreshBettorWagerData
     } = useBettorStateUtilities({useEffects: true})
 
     const [bettorGroupBettors, _, loadingBettors, serverError] = bettorGroupBettorsServerData
 
-    function nowQuarter() {
-        return monthToQuarter(new Date().getMonth() + 1)
-    }
-
-    const [selectedYear, setSelectedYear] = useState<number>(2024)
-    const [selectedQuarter, setSelectedQuarter] = useState<QuarterNum | undefined>(nowQuarter())
+    const {
+        selectedYear,
+        setSelectedYear,
+        selectedQuarter,
+        setSelectedQuarter
+    } = useTimeFrameSelection(true)
 
     function qualifiedBettorWagerData() {
-        return sortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+        return allSortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
             if (!selectedQuarter) return true
             return !bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
         })
     }
 
     function disqualifiedBettorWagerData() {
-        return sortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+        return allSortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
             if (!selectedQuarter) return false
             return bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
         })
@@ -106,27 +106,10 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
     } else if (bettorGroupBettors) {
         return (
             <SafeAreaView>
-                <View style={{display: "flex", flexDirection: "row"}}>
-                <ButtonSelectionGroup 
-                    options={[2024]}
-                    selected={selectedYear}
-                    setter={setSelectedYear}
-                    allowUnselect={false}
-                    allowOverflow={true}
-                    containerStyle={{alignSelf: "flex-start", flex: 1}}
-                    colorMap={() => "primary"}
+                <TimeFrameSelection 
+                    onYearChange={setSelectedYear}
+                    onQuarterChange={setSelectedQuarter}
                 />
-                <ButtonSelectionGroup 
-                    options={[1, 2, 3, 4] as QuarterNum[]}
-                    selected={selectedQuarter}
-                    setter={setSelectedQuarter}
-                    allowUnselect={true}
-                    allowOverflow={true}
-                    makeTitle={q => `Q${q}`}
-                    containerStyle={{flex: 1, justifyContent: "flex-end"}}
-                    colorMap={() => "primary"}
-                />
-                </View>
                 <ScrollView
                     style={{alignSelf: "center", minHeight: "100%"}}
                     refreshControl={

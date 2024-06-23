@@ -1,16 +1,16 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
-import { Bettor, BettorGroup, Wager } from "../types";
+import { Bettor, BettorGroup, Wager } from "../../types";
 import { Overlay, Text, Divider, Button } from "@rneui/themed";
 import { StyleProp, TextInput, View, ViewStyle } from "react-native";
-import { GlobalStylesheet } from "../../styles";
-import { amountToString, parsedAmount } from "../../utilities/stringUtilities";
-import { usePrefixState } from "../stateUtilities.ts/prefixState";
-import { useApiState } from "../state/apiState";
-import { useServerDataState } from "../stateUtilities.ts/serverDataState";
-import { useAlertState } from "../stateUtilities.ts/alertState";
-import ErrorMessage from "./ErrorMessage";
-import SuccessMessage from "./SuccessMessage";
-import { useBettorDispatch } from "../state/bettorState";
+import { GlobalStylesheet } from "../../../styles";
+import { amountToString, parsedAmount } from "../../../utilities/stringUtilities";
+import { usePrefixState } from "../../stateUtilities.ts/prefixState";
+import { useApiState } from "../../state/apiState";
+import { useServerDataState } from "../../stateUtilities.ts/serverDataState";
+import { useAlertState } from "../../stateUtilities.ts/alertState";
+import ErrorMessage from "../alerts/ErrorMessage";
+import SuccessMessage from "../alerts/SuccessMessage";
+import { useBettorDispatch } from "../../state/bettorState";
 
 type Props = {
     bettor: Bettor

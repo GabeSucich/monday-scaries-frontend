@@ -1,24 +1,29 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { BettorTabStackParamsList } from "./BettorView";
 import { View } from "react-native";
 import { Text } from "@rneui/themed";
 import { useBettorDispatch, useBettorState, useBettorStateUtilities } from "../../state/bettorState";
 import { useApiState } from "../../state/apiState";
-import { LineChart } from "react-native-chart-kit";
 import { wagersToLineChartData } from "../../../utilities/bettorUtilities";
+import { useTimeFrameSelection } from "../../../utilities/dateUtilities";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import AnalyticsProvider from "../../state/analyticsState";
+import PerformanceAnalyticsView from "./PerformanceAnalyticsView";
+import LoadingComponent from "../../components/alerts/LoadingMessage";
+import LoadingBox from "../../components/alerts/LoadingBox";
 
 type Props = BottomTabScreenProps<BettorTabStackParamsList, "Analytics">
 
-const AnalyticsView: FunctionComponent<Props> = (props) => {
+export const AnalyticsView: FunctionComponent<Props> = (props) => {
 
     const {
         bettorState,
         bettorGroupBettorsServerData,
-        allBettorWagersLoaded,
-        sortedBettorWagerData,
-        bettorWagerErrors
+        allBettorWagersLoaded
     } = useBettorStateUtilities({useEffects: true})
+
+    const Tab = createMaterialTopTabNavigator()
 
     const [bettorGroupBettors, _, bettorGroupBettorsLoading, serverError] = bettorGroupBettorsServerData
 
@@ -32,31 +37,17 @@ const AnalyticsView: FunctionComponent<Props> = (props) => {
     }
     
     return (
-        <View style={{paddingTop: 10, alignItems: "center"}}>
-            <Text>Analytics!</Text>
-            {/* {
-                wagerChartData(bettorState.bettor._id) ?
-                <LineChart 
-                    data={{
-                        labels: ["1", "2", "3"],
-                        datasets: [{
-                            data: wagerChartData(bettorState.bettor._id)
-                        }],
-                    }}
-                    width={400}
-                    height={400}
-                    chartConfig={{
-                        color: () => "red"
-                    }}
-                />
-                : <Text>Loading...</Text>
+        <AnalyticsProvider>
+            <View style={{}}>
 
-            } */}
-            
-        </View>
+            </View>
+            {
+                allBettorWagersLoaded() ?
+                    <PerformanceAnalyticsView /> : 
+                     <LoadingBox message="Loading wager analytics..."/>
+            }
+        </AnalyticsProvider>
     )
 }
 
 export default AnalyticsView
-
-

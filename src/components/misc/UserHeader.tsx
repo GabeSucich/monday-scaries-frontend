@@ -1,10 +1,10 @@
 import React, { FunctionComponent, PropsWithChildren, useEffect, useState } from "react";
-import { Bettor, BettorGroup, ModifiedUser } from "../types";
+import { Bettor, BettorGroup, ModifiedUser } from "../../types";
 import { Avatar, Chip, Header } from "@rneui/themed";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View, ViewBase } from "react-native";
-import { useBettorGroupsState } from "../state/bettorGroupsState";
-import { GlobalStyleAttrs } from "../../styles";
+import { useBettorGroupsState } from "../../state/bettorGroupsState";
+import { GlobalStyleAttrs } from "../../../styles";
 
 interface Props extends PropsWithChildren {
     userInitials: string

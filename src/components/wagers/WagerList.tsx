@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useState } from "react";
-import { Bettor, BettorGroup, Wager } from "../types";
+import { Bettor, BettorGroup, Wager } from "../../types";
 import { FlatList, KeyboardAvoidingView, RefreshControl, ScrollView, StyleProp, View, ViewStyle } from "react-native";
-import ErrorMessage from "./ErrorMessage";
-import LoadingComponent from "./LoadingMessage";
-import { GlobalStyleAttrs, GlobalStylesheet } from "../../styles";
+import ErrorMessage from "../alerts/ErrorMessage";
+import LoadingComponent from "../alerts/LoadingMessage";
+import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 import { FAB } from "@rneui/themed";
 import EditWagerModal from "./EditWagerModal";
-import DepositModal from "./DepositModal";
+import DepositModal from "../banking/DepositModal";
 import WagerView from "./WagerView";
 
 interface Props {

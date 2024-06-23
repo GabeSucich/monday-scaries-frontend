@@ -7,6 +7,7 @@ type Props<T> = {
     selected?: T,
     setter: (s: T | undefined) => void,
     containerStyle?: StyleProp<ViewStyle>,
+    buttonContainerStyle?: StyleProp<ViewStyle>,
     buttonStyle?: StyleProp<ViewStyle>,
     allowUnselect?: boolean
     allowOverflow?: boolean
@@ -35,9 +36,9 @@ function ButtonSelectionGroup<T>(props: Props<T>) {
             return <Button 
                 color={props.colorMap ? props.colorMap(option) ?? "secondary" : "secondary"} 
                 titleStyle={{fontSize: 13}} 
-                buttonStyle={[{paddingVertical: 3}]} 
+                buttonStyle={[props.buttonStyle ?? {}, {paddingVertical: 3}]} 
                 type={option === props.selected ? "solid" : "outline"} 
-                containerStyle={{marginRight: 2}}
+                containerStyle={[props.buttonContainerStyle ?? {}, {marginRight: 2}]}
                 title={props.makeTitle ? props.makeTitle(option): String(option)} 
                 onPress={() => handlePress(option)} 
                 key={index}

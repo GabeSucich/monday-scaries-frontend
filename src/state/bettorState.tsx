@@ -114,6 +114,7 @@ function bettorReducer(state: BettorState, action: BettorAction): BettorState {
             for (const data of action.bettorWagerData) {
                 newBettorWagers[data.bettor._id] = data
             }
+           
             return {...state, allBettorWagers: newBettorWagers}
         default:
             return state
@@ -263,11 +264,11 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
         return errors
     }
 
-    function sortedBettors(bettors: BettorWagerData[]) {
+    function _sortedBettorsByProfit(bettors: BettorWagerData[]) {
         return [...bettors].sort((b1, b2) => wagersProfit(b2.wagers ?? []) - wagersProfit(b1.wagers ?? []))
     }
 
-    function _sortedBettorWagerData(wagerFilter?: (w: Wager[]) => Wager[]) {
+    function _allSortedBettorWagerData(wagerFilter?: (w: Wager[]) => Wager[]) {
         const _bettorWagers = [...Object.values(bettorState.allBettorWagers)]
         const _wagerFilter = wagerFilter ?? ((w: Wager[]) => w)
         const bettorWagers = _bettorWagers.map(b => {
@@ -276,31 +277,37 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
                 wagers: _wagerFilter(b.wagers ?? [])
             }
         })
-        return sortedBettors(bettorWagers).map(d => ({
+        return _sortedBettorsByProfit(bettorWagers).map(d => ({
             bettor: d.bettor,
             user: d.user,
             wagers: d.wagers ?? []
         }))
     }
 
-    function sortedBettorWagerData(dateDes?: Partial<DateDesignation>) {
+    function allSortedBettorWagerData(dateDes?: Partial<DateDesignation>) {
         function wagerFilter(wager: Wager) {
             const cond1 = !dateDes || new ContestDate(wager.contestDate).matchesDateDesignation(dateDes)
             return cond1
         }
-        return _sortedBettorWagerData(
+        return _allSortedBettorWagerData(
             wagers => wagers.filter(wagerFilter)
         )
     }
+
+    function getBettorWagers(bettorId: string, dateDes?: Partial<DateDesignation>) {
+        return bettorState.allBettorWagers[bettorId]?.wagers ?? []
+    }
+
 
 
     return {
         bettorGroupBettorsServerData: [bettorGroupBettors, getterWrapper, loadingBettors, serverError],
         allBettorWagersLoaded,
         bettorWagerErrors,
-        sortedBettorWagerData,
+        allSortedBettorWagerData,
         refreshBettorWagerData,
         refreshingState: [refreshing, setRefreshing] as [boolean, Dispatch<boolean>],
+        getBettorWagers,
         bettorState
     }
 

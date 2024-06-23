@@ -3,7 +3,7 @@ import { useServerDataState } from "../stateUtilities.ts/serverDataState";
 import { Bettor, BettorGroup, ModifiedUser, User } from "../types";
 import { View } from "react-native";
 import { Header, Text } from "@rneui/themed";
-import UserHeader from "../components/UserHeader";
+import UserHeader from "../components/misc/UserHeader";
 import BettorGroupSelectionView from "./views/BettorGroupSelectionView";
 import { useBettorGroupsState } from "../state/bettorGroupsState";
 import BettorProvider from "../state/bettorState";

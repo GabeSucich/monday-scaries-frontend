@@ -5,7 +5,7 @@ import { useApiState } from "../../state/apiState";
 import { useBettorDispatch, useBettorState } from "../../state/bettorState";
 import { useServerDataState } from "../../stateUtilities.ts/serverDataState";
 import { Wager } from "../../types";
-import WagerList from "../../components/WagerList";
+import WagerList from "../../components/wagers/WagerList";
 
 
 type Props = BottomTabScreenProps<BettorTabStackParamsList, "Wagers">
