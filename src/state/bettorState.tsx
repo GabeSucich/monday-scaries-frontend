@@ -275,7 +275,7 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
         return errors
     }
 
-    function _sortedBettorsByProfit(bettors: BettorWagerData[], sorter: BettorWagerSorter) {
+    function _sortedBettors(bettors: BettorWagerData[], sorter: BettorWagerSorter) {
         return [...bettors].sort((b1, b2) => sorter(b1, b2))
     }
 
@@ -288,8 +288,8 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
                 wagers: _wagerFilter(b.wagers ?? [])
             }
         })
-        const sorter: BettorWagerSorter = bettorWagerSorter ?? ((b1, b2) => bettorProfit(b2.bettor, b2.wagers ?? []) - bettorProfit(b1.bettor, b1.wagers ?? []))
-        return _sortedBettorsByProfit(bettorWagers, sorter).map(d => ({
+        const sorter: BettorWagerSorter = bettorWagerSorter ?? ((b1, b2) => wagersProfit(b2.wagers ?? []) - wagersProfit(b1.wagers ?? []))
+        return _sortedBettors(bettorWagers, sorter).map(d => ({
             bettor: d.bettor,
             user: d.user,
             wagers: d.wagers ?? []
@@ -312,8 +312,6 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
     function getBettorWagers(bettorId: string, dateDes?: Partial<DateDesignation>) {
         return bettorState.allBettorWagers[bettorId]?.wagers ?? []
     }
-
-
 
     return {
         bettorGroupBettorsServerData: [bettorGroupBettors, getterWrapper, loadingBettors, serverError],

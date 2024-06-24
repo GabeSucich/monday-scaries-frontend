@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { QuarterNum, useTimeFrameSelection } from "../../../utilities/dateUtilities";
 
 interface Props {
+    setInitialQuarter?: boolean
     onYearChange: (year: undefined | any) => any,
     onQuarterChange: (quarter: QuarterNum | undefined) => any
 }
@@ -14,7 +15,7 @@ const TimeFrameSelection: FunctionComponent<Props> = (props) => {
         selectedYear,
         setSelectedQuarter,
         setSelectedYear
-    } = useTimeFrameSelection()
+    } = useTimeFrameSelection(props.setInitialQuarter ?? true)
 
     useEffect(() => {
         props.onYearChange(selectedYear)

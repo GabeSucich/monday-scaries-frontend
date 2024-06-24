@@ -212,7 +212,3 @@ export function useTimeFrameSelection(setInitialQuarter?: boolean): {
         setSelectedQuarter
     }
 }
-
-function getEndOfQuarter() {
-
-}

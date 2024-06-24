@@ -4,7 +4,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackParamsList } from "../Home";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AccountWagerListView from "./AccountWagerListView";
-import AnalyticsView from "./AnalyticsView";
 import StandingsView from "./StandingsView";
 
 type Props = NativeStackScreenProps<HomeStackParamsList, "Bettor">

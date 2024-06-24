@@ -10,7 +10,7 @@ import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navig
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 import WagerList from "../../components/wagers/WagerList";
-import { ContestDate, QuarterNum, monthToQuarter, parseQuarterDateString, useTimeFrameSelection } from "../../../utilities/dateUtilities";
+import { ContestDate, QuarterNum, monthToQuarter, nowDate, parseQuarterDateString, useTimeFrameSelection } from "../../../utilities/dateUtilities";
 import TimeFrameSelection from "../../components/timeFrames/TimeFrameSelection";
 
 export type StandingStackParamsList = {
