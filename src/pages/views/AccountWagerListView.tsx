@@ -6,6 +6,7 @@ import { useBettorDispatch, useBettorState } from "../../state/bettorState";
 import { useServerDataState } from "../../stateUtilities.ts/serverDataState";
 import { Wager } from "../../types";
 import WagerList from "../../components/wagers/WagerList";
+import { getEndOfQuarterTimestamp } from "../../../utilities/dateUtilities";
 
 
 type Props = BottomTabScreenProps<BettorTabStackParamsList, "Wagers">
@@ -48,6 +49,33 @@ const AccountWagerListView: FunctionComponent<Props> = (props) => {
         }
     }, [wagers])
 
+    const LOCKED_TIME_INTERVAL_SECS = 6*60*60 // Lock betting for the last 6 hours of the quarter
+    const [disabledMessage, setDisabledMessage] = useState("")
+    const [wagerLockCheckIntervalId, setWagerLockCheckIntervalId] = useState<NodeJS.Timeout | undefined>(undefined)
+
+    function nowWithinLockedInterval() {
+        const now = Date.now()
+        const eoq = getEndOfQuarterTimestamp()
+        return now < eoq && Math.abs(now - eoq) <= LOCKED_TIME_INTERVAL_SECS*1000
+    }
+
+    function checkForLock() {
+        const shouldLock = nowWithinLockedInterval()
+        if (shouldLock) {
+            setDisabledMessage(`Wagers cannot be placed with 6 hours of the end of the quarter.`)
+        } else {
+            setDisabledMessage("")
+        }
+    }
+
+    useEffect(() => {
+        checkForLock()
+        setWagerLockCheckIntervalId(setInterval(checkForLock, 30000))
+        return () => {
+            clearInterval(wagerLockCheckIntervalId)
+        }
+    }, [])
+
 
 
     return (
@@ -61,6 +89,8 @@ const AccountWagerListView: FunctionComponent<Props> = (props) => {
             allowEdits={true}
             refreshing={refreshing}
             refresh={refresh}
+            newWagerDisabled={!!disabledMessage}
+            newWagerDisabledMessage={disabledMessage}
         />
     )
 }

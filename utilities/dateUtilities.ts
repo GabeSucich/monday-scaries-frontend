@@ -88,6 +88,24 @@ export function nowDate() {
     }
 }
 
+export function getEndOfQuarterTimestamp() {
+    const now = nowDate()
+    let lastMonth = 3
+    const nowQuarter = now.quarter
+    if (nowQuarter === 1) {
+        lastMonth = 3
+    } else if (nowQuarter === 2) {
+        lastMonth = 6
+    } else if (nowQuarter === 3) {
+        lastMonth = 9
+    } else if (nowQuarter === 4) {
+        lastMonth = 12
+    }
+    const date = new Date(now.year, lastMonth, 0)
+    date.setHours(23, 59, 59)
+    return date.getTime()
+}
+
 export class ContestDate {
     private _contestDate: DateDesignation
     constructor(
@@ -193,4 +211,8 @@ export function useTimeFrameSelection(setInitialQuarter?: boolean): {
         selectedQuarter,
         setSelectedQuarter
     }
+}
+
+function getEndOfQuarter() {
+
 }

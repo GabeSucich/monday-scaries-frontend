@@ -38,14 +38,13 @@ export const AnalyticsView: FunctionComponent<Props> = (props) => {
     
     return (
         <AnalyticsProvider>
-            <View style={{}}>
-
-            </View>
+            <View style={{alignItems: "center"}}>
             {
                 allBettorWagersLoaded() ?
                     <PerformanceAnalyticsView /> : 
                      <LoadingBox message="Loading wager analytics..."/>
             }
+            </View>
         </AnalyticsProvider>
     )
 }

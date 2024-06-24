@@ -1,8 +1,10 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useAnalyticsDispatch, useAnalyticsState, useAnalyticsStateUtilities } from "../../state/analyticsState";
 import { View } from "react-native";
 import MultipleButtonSelectionGroup from "../utilities/ButtonMultipleSelectionGroup";
 import { Divider } from "@rneui/base";
+import { Icon, ListItem, Text } from "@rneui/themed";
+import { GlobalStyleAttrs, GlobalStylesheet } from "../../../styles";
 
 const AnalyticsWagerFilterSelection: FunctionComponent<{}> = () => {
 
@@ -48,21 +50,49 @@ const AnalyticsWagerFilterSelection: FunctionComponent<{}> = () => {
         return  Object.entries(betTypeCounts).sort((a, b) => b[1] - a[1]).map(pair => pair[0])
     }
 
+    const [sportFilterExpanded, setSportFilterExpanded] = useState(false)
+    const [betTypeFilterExpanded, setBetTypeFilterExpanded] = useState(false)
+
     return (
         <View>
-            <MultipleButtonSelectionGroup 
+            <ListItem.Accordion
+                containerStyle={[GlobalStylesheet.box, {marginBottom: 2, padding: 2, backgroundColor: GlobalStyleAttrs.backgroundColors.neutral}]}
+                content={
+                    <>
+                        <Icon name="filter" type="antdesign" style={{marginRight: 10}}/>
+                        <Text>Sports</Text>
+                    </>
+                }
+                isExpanded={sportFilterExpanded}
+                onPress={() => setSportFilterExpanded(!sportFilterExpanded)}
+            >
+             <MultipleButtonSelectionGroup 
+                containerStyle={{padding: 5}}
                 options={availableSports()}
                 allowOverflow={false}
                 selected={analyticsState.selectedSports}
                 setter={(sports) => analyticsDispatch({type: "SET_SELECTED_SPORTS", sports})}
             />
-            <Divider/>
-            <MultipleButtonSelectionGroup 
-                options={availableBetTypes()}
-                allowOverflow={false}
-                selected={analyticsState.selectedBetTypes}
-                setter={betTypes => analyticsDispatch({type: "SET_SELECTED_BET_TYPES", betTypes})}
-            />
+            </ListItem.Accordion>
+            <ListItem.Accordion 
+                containerStyle={[GlobalStylesheet.box, {marginBottom: 2, padding: 2, backgroundColor: GlobalStyleAttrs.backgroundColors.neutral}]}
+                content={
+                    <>
+                        <Icon name="filter" type="antdesign" style={{marginRight: 10}}/>
+                        <Text>Bet types</Text>
+                    </>
+                }
+                isExpanded={betTypeFilterExpanded}
+                onPress={() => setBetTypeFilterExpanded(!betTypeFilterExpanded)}
+            >
+                <MultipleButtonSelectionGroup 
+                    containerStyle={{padding: 5}}
+                    options={availableBetTypes()}
+                    allowOverflow={false}
+                    selected={analyticsState.selectedBetTypes}
+                    setter={betTypes => analyticsDispatch({type: "SET_SELECTED_BET_TYPES", betTypes})}
+                />
+            </ListItem.Accordion>
         </View>
     )
 

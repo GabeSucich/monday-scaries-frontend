@@ -195,6 +195,17 @@ export default function BettorProvider({user, bettor, children, bettorGroup}: Be
 
 }
 
+export type WagerFilterOpts = {
+    dateDes?: Partial<DateDesignation>
+    betTypes?: string[]
+    sports?: string[]
+}
+export type BettorWagerSorter = (b1: BettorWagerData, b2: BettorWagerData) => number
+export type BettorWagerSortOpts = {
+    sorter?: BettorWagerSorter
+}
+
+
 export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
 
     const bettorState = useBettorState()
@@ -264,11 +275,11 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
         return errors
     }
 
-    function _sortedBettorsByProfit(bettors: BettorWagerData[]) {
-        return [...bettors].sort((b1, b2) => wagersProfit(b2.wagers ?? []) - wagersProfit(b1.wagers ?? []))
+    function _sortedBettorsByProfit(bettors: BettorWagerData[], sorter: BettorWagerSorter) {
+        return [...bettors].sort((b1, b2) => sorter(b1, b2))
     }
 
-    function _allSortedBettorWagerData(wagerFilter?: (w: Wager[]) => Wager[]) {
+    function _allSortedBettorWagerData(wagerFilter?: (w: Wager[]) => Wager[], bettorWagerSorter?: BettorWagerSorter) {
         const _bettorWagers = [...Object.values(bettorState.allBettorWagers)]
         const _wagerFilter = wagerFilter ?? ((w: Wager[]) => w)
         const bettorWagers = _bettorWagers.map(b => {
@@ -277,20 +288,24 @@ export function useBettorStateUtilities(opts?: {useEffects?: boolean}) {
                 wagers: _wagerFilter(b.wagers ?? [])
             }
         })
-        return _sortedBettorsByProfit(bettorWagers).map(d => ({
+        const sorter: BettorWagerSorter = bettorWagerSorter ?? ((b1, b2) => bettorProfit(b2.bettor, b2.wagers ?? []) - bettorProfit(b1.bettor, b1.wagers ?? []))
+        return _sortedBettorsByProfit(bettorWagers, sorter).map(d => ({
             bettor: d.bettor,
             user: d.user,
             wagers: d.wagers ?? []
         }))
     }
 
-    function allSortedBettorWagerData(dateDes?: Partial<DateDesignation>) {
+    function allSortedBettorWagerData(filterOpts?: WagerFilterOpts, sortOpts?: BettorWagerSortOpts) {
         function wagerFilter(wager: Wager) {
-            const cond1 = !dateDes || new ContestDate(wager.contestDate).matchesDateDesignation(dateDes)
-            return cond1
+            const cond1 = !filterOpts?.dateDes || new ContestDate(wager.contestDate).matchesDateDesignation(filterOpts.dateDes)
+            const cond2 = !filterOpts?.sports || filterOpts.sports.includes(wager.details?.sport)
+            const cond3 = !filterOpts?.betTypes || filterOpts.betTypes.includes(wager.details?.betType)
+            return cond1 && cond2 && cond3
         }
         return _allSortedBettorWagerData(
-            wagers => wagers.filter(wagerFilter)
+            wagers => wagers.filter(wagerFilter),
+            sortOpts?.sorter
         )
     }
 

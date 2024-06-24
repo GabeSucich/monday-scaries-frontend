@@ -60,14 +60,14 @@ const StandingsList: FunctionComponent<StandingsListProps> = (props) => {
     } = useTimeFrameSelection(true)
 
     function qualifiedBettorWagerData() {
-        return allSortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+        return allSortedBettorWagerData({dateDes: {year: selectedYear, quarterNum: selectedQuarter}}).filter(b => {
             if (!selectedQuarter) return true
             return !bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
         })
     }
 
     function disqualifiedBettorWagerData() {
-        return allSortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter}).filter(b => {
+        return allSortedBettorWagerData({dateDes: {year: selectedYear, quarterNum: selectedQuarter}}).filter(b => {
             if (!selectedQuarter) return false
             return bettorIsQuarterDQed(b.bettor, selectedYear, selectedQuarter)
         })

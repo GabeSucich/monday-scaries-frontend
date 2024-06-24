@@ -1,6 +1,6 @@
 import { Dispatch, PropsWithChildren, createContext, useContext, useReducer } from "react"
 import { QuarterNum, nowDate } from "../../utilities/dateUtilities"
-import { useBettorStateUtilities } from "./bettorState"
+import { BettorWagerSortOpts, BettorWagerSorter, WagerFilterOpts, useBettorStateUtilities } from "./bettorState"
 
 type AnalyticsState = {
     selectedYear?: number,
@@ -69,11 +69,33 @@ export default function AnalyticsProvider({children}: PropsWithChildren) {
 export function useAnalyticsStateUtilities() {
     const { allSortedBettorWagerData, allBettorWagersLoaded, bettorWagerErrors , getBettorWagers} = useBettorStateUtilities()
     const analyticsState = useAnalyticsState()
-    const {selectedYear, selectedQuarter} = analyticsState
+    const {selectedYear, selectedQuarter, selectedSports, selectedBetTypes} = analyticsState
 
-    function analyticsSortedBettorWagerData() {
-        return allSortedBettorWagerData({year: selectedYear, quarterNum: selectedQuarter})
+    function analyticsSortedBettorWagerData(opts?: {filterByDate?: boolean, filterByDetails?: boolean, bettorWagerSorter?: BettorWagerSorter}) {
+        const filterOpts: WagerFilterOpts = {}
+        if (opts?.filterByDate) {
+            filterOpts.dateDes = {quarterNum: selectedQuarter, year: selectedYear}
+        }
+        if (opts?.filterByDetails) {
+            if (selectedSports.length > 0) {
+                filterOpts.sports = selectedSports
+            }
+            if (selectedBetTypes.length > 0) {
+                filterOpts.betTypes = selectedBetTypes
+            }
+            
+        }
+        const sortOpts: BettorWagerSortOpts = opts?.bettorWagerSorter ? {
+            sorter: opts.bettorWagerSorter
+        } : undefined
+        return allSortedBettorWagerData(filterOpts, sortOpts)
     }
+    
+    // function filteredAnalyticsSortedBettorWagerData() {
+    //     const unfiltered = analyticsSortedBettorWagerData()
+    //     return unfiltered.map()
+    // }
+    
 
     return {
         analyticsDataLoaded: allBettorWagersLoaded,
