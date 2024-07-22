@@ -5,6 +5,7 @@ import { HomeStackParamsList } from "../Home";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AccountWagerListView from "./AccountWagerListView";
 import StandingsView from "./StandingsView";
+import AnalyticsView from "./AnalyticsView";
 
 type Props = NativeStackScreenProps<HomeStackParamsList, "Bettor">
 
@@ -24,7 +25,7 @@ const BettorView: FunctionComponent<Props> = (props) => {
         <BettorProvider user={user} bettor={bettor} bettorGroup={bettorGroup}>
             <TabStack.Navigator initialRouteName="Wagers" screenOptions={{headerShown: false}}>
                 <TabStack.Screen name="Wagers" component={AccountWagerListView}/>
-                {/* <TabStack.Screen name="Analytics" component={AnalyticsView} /> */}
+                <TabStack.Screen name="Analytics" component={AnalyticsView} />
                 <TabStack.Screen name="Standings" component={StandingsView} />
             </TabStack.Navigator>
         </BettorProvider>
